@@ -17,7 +17,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 		G4StepPoint *preStepPoint = aStep->GetPreStepPoint();
 		G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
 
-        G4double energy = preStepPoint->GetTotalEnergy();
+        	G4double energy = preStepPoint->GetTotalEnergy();
 		G4ThreeVector posParticle = preStepPoint->GetPosition();
 
 		G4cout << "Particle position: " << posParticle << G4endl;
