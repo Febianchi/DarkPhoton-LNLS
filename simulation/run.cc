@@ -33,6 +33,18 @@ void MyRunAction::BeginOfRunAction(const G4Run*)
     man->CreateNtupleIColumn("PositronEvent");
 
     man->FinishNtuple(2);
+
+    //tuples for eventAction:
+    man->CreateNtuple("EventAction", "EventAction");
+    man->CreateNtupleIColumn("PhotonEventID");
+    man->CreateNtupleIColumn("PositronEventID");
+
+    //man->CreateNtupleDColumn("absoEdep");
+    //man->CreateNtupleDColumn("gapEdep");
+    //man->CreateNtupleDColumn("absoTrackLength");
+    //man->CreateNtupleDColumn("gapTrackLength");
+
+    man->FinishNtuple(3);
 }
 
 void MyRunAction::EndOfRunAction(const G4Run*)

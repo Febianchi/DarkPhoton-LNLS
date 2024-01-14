@@ -79,22 +79,22 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     // Photon detector:
 
-    G4Box *solidDetector = new G4Box("solidDetector", boxWidth, boxWidth, 0.01*m);
+    G4Box *solidDetector = new G4Box("Calorimeter", boxWidth, boxWidth, 0.01*m);
 
-    calorimeterDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
+    calorimeterDetector = new G4LogicalVolume(solidDetector, worldMat, "CalorimeterLV");
 
-    G4VPhysicalVolume *physDetector = new G4PVPlacement(0, G4ThreeVector(0, 0, 3.01*m), calorimeterDetector, "physDetector", logicWorld, false, 0, true);
+    G4VPhysicalVolume *physDetector = new G4PVPlacement(0, G4ThreeVector(0, 0, 3.01*m), calorimeterDetector, "Calorimeter", logicWorld, false, 0, true);
 
     // Positron detector:
 
-    G4Box *solidDetector2 = new G4Box("solidDetector2", boxWidth, 0.5*m, 0.01*m);
+    G4Box *solidDetector2 = new G4Box("PositronDetector", boxWidth, 0.5*m, 0.01*m);
 
-    positronDetector = new G4LogicalVolume(solidDetector2, worldMat, "positronDetector");
+    positronDetector = new G4LogicalVolume(solidDetector2, worldMat, "PositronDetectorLV");
 
     auto detectorRot = new G4RotationMatrix();
     detectorRot->rotateX(-33.69*deg);
 
-    G4VPhysicalVolume *physDetector2 = new G4PVPlacement(detectorRot, G4ThreeVector(0, -1.25*m, 2.21*m), positronDetector, "physDetector2", logicWorld, false, 0, true);
+    G4VPhysicalVolume *physDetector2 = new G4PVPlacement(detectorRot, G4ThreeVector(0, -1.25*m, 2.21*m), positronDetector, "PositronDetector", logicWorld, false, 0, true);
 
     // Visualization attributes:
 
@@ -119,12 +119,60 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 void MyDetectorConstruction::ConstructSDandField()
 {
-    MySensitiveDetector *caloDetector = new MySensitiveDetector("SensitiveDetector");
-    MyPositronDetector *posDetector = new MyPositronDetector("PositronDetector");
+    //MySensitiveDetector *caloDetector = new MySensitiveDetector("SensitiveDetector");
+    //MyPositronDetector *posDetector = new MyPositronDetector("PositronDetector");
+
+    //calorimeterDetector->SetSensitiveDetector(caloDetector);
+    //positronDetector->SetSensitiveDetector(posDetector);
+
+    G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
+
+    auto caloDetector = new G4MultiFunctionalDetector("Calorimeter");
+    G4SDManager::GetSDMpointer()->AddNewDetector(caloDetector);
+    //G4SDManager::GetSDMpointer()->AddNewDetector(caloDetector);
+
+    G4VPrimitiveScorer* primitive;
+    primitive = new G4PSEnergyDeposit("Edep");
+    caloDetector->RegisterPrimitive(primitive);
+
+    primitive = new G4PSTrackLength("TrackLength");
+    auto charged = new G4SDChargedFilter("chargedFilter");
+    primitive->SetFilter(charged);
+    caloDetector->RegisterPrimitive(primitive);
 
     calorimeterDetector->SetSensitiveDetector(caloDetector);
-    positronDetector->SetSensitiveDetector(posDetector);
+    //SetSensitiveDetector("CalorimeterLV", caloDetector);
 
+    auto posDec = new G4MultiFunctionalDetector("PositronDetector");
+    G4SDManager::GetSDMpointer()->AddNewDetector(posDec);
+
+    primitive = new G4PSEnergyDeposit("Edep");
+    posDec->RegisterPrimitive(primitive);
+
+    primitive = new G4PSTrackLength("TrackLength");
+    primitive->SetFilter(charged);
+    posDec->RegisterPrimitive(primitive);
+
+    positronDetector->SetSensitiveDetector(posDec);
+    //SetSensitiveDetector("PositronDetectorLV", posDec);
+
+    /*
+    G4SDManager* posMan = G4SDManager::GetSDMpointer();
+    posMan->AddNewDetector(posDetector);
+
+    G4SDManager::GetSDMpointer()->AddNewDetector(posDetector);
+
+    G4SDManager* caloMan = G4SDManager::GetSDMpointer();
+    caloMan->AddNewDetector(caloDetector);
+
+    //G4VPrimitiveScorer* primitive;
+    primitive = new G4PSEnergyDeposit("Edep");
+    caloDetector->RegisterPrimitive(primitive);
+    */
+
+    G4cout << "\n\n\n PRINTING EDEP HERE: \n\n " << primitive << "\n\n PRINTING EDEP HERE \n\n\n" << G4endl;
+
+    // Magnetic Field
     magField = new MagneticField();
     fieldMgr = new G4FieldManager();
     fieldMgr->SetDetectorField(magField);

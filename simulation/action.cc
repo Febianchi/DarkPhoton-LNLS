@@ -13,4 +13,9 @@ void MyActionInitialization::Build() const
 
     MyRunAction *runAction = new MyRunAction();
     SetUserAction(runAction);
+
+    EventAction *eventAction = new EventAction();
+    SetUserAction(eventAction);
+    //simulation::EventAction *eventAction = new simulation::EventAction();
+    //SetUserAction(eventAction);
 }

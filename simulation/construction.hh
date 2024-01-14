@@ -22,6 +22,13 @@
 #include "G4TransportationManager.hh"
 #include "G4Region.hh"
 
+#include "G4SDManager.hh"
+#include "G4SDChargedFilter.hh"
+#include "G4MultiFunctionalDetector.hh"
+#include "G4VPrimitiveScorer.hh"
+#include "G4PSEnergyDeposit.hh"
+#include "G4PSTrackLength.hh"
+
 #include "calodetector.hh"
 #include "positrondetector.hh"
 #include "magneticfield.hh"
